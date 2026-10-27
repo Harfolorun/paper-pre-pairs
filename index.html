@@ -21,9 +21,10 @@
 :root[data-theme="black"]{--bg:#000;--page:#000;--surface:#111;--line:#2a2a2a;--sel-bg:#0d1526;--hover:#4a4a4a}
 @media (hover:hover) and (min-width:700px){:root{--H:70vh}}
 *{box-sizing:border-box}
-/* Paper themes: the drawn desk reaches 20.9% of the game's height above it but only 6.4% below, so on tall phones the plain
-   centred game left a black strip under the art. Shift everything down (only into spare room) so the art is centred instead. */
-:root:is([data-theme="light"],[data-theme="dark"]){--dy:round(max(0px,min(calc(var(--H)*.07255),calc((100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - var(--H))/2))),1px)}
+/* Paper themes: the visible desk reaches 22.6% of the game's height above it but only 8.3% below (the art itself ends at 22.9% / 8.5%), so on tall phones the plain
+   centred game left a black strip under the art. Shift everything down just enough for the art to rest on the screen's bottom edge
+   (centring the art instead only on extremely tall screens). */
+:root:is([data-theme="light"],[data-theme="dark"]){--dy:round(up,max(0px,min(calc(var(--H)*.0715),calc((100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - var(--H))/2 - var(--H)*.083))),1px)}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--page);touch-action:pan-y;overscroll-behavior:none}
 body{display:grid;place-items:center;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);-webkit-text-size-adjust:100%;color:var(--text);font-family:var(--font);font-weight:500;letter-spacing:var(--ls,normal);line-height:1.35}
 #app{position:relative;top:var(--dy,0px);overflow:hidden;height:round(var(--H),2px);width:round(calc(var(--H)/1.76),2px);container-type:size;background:var(--bg);border:1px solid var(--line);border-radius:14px;--s:round(39cqw,2px);--y0:calc(86.9cqh - 3*var(--s))}
@@ -167,7 +168,7 @@ body:has(#stage[data-sec]) #scene .hs{transform:translateY(-83.6px)}
 :root[data-theme="dark"] body:is([data-page="landing"],[data-page="options"],[data-page="menu"]) #darklogo{display:block}
 /* View limit (Light + Dark): visuals outside the game container are cut 50% W past its left edge, 5% W past Layer 2's right edge, 2% H above Layer 1's top and 2% H below Layer 2's bottom; rounded like a Big Square, thin dark warm-grey outline, black beyond. */
 #viewclip{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2 + var(--dy,0px));width:calc(var(--H)/1.76);height:var(--H);z-index:14;pointer-events:none}
-#viewclip::before{content:"";position:absolute;left:-50%;right:-75.5%;top:-20.938%;bottom:-6.4285%;border-radius:calc(var(--H)/1.76*.02983);box-shadow:0 0 0 max(1.5px,calc(var(--H)*.0018)) var(--vc-line),0 0 0 300vmax #000}
+#viewclip::before{content:"";position:absolute;left:-50%;right:-75.5%;top:-22.6%;bottom:-8.3%;border-radius:calc(var(--H)/1.76*.02983);box-shadow:0 0 0 max(1.5px,calc(var(--H)*.0018)) var(--vc-line),0 0 0 300vmax #000}
 :root[data-theme="light"] #viewclip{--vc-line:#b1aaa6}
 :root[data-theme="dark"] #viewclip{--vc-line:#2d1c22}
 :root:is([data-theme="light"],[data-theme="dark"]) #viewclip{display:block}
