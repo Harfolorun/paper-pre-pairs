@@ -1064,10 +1064,11 @@ document.addEventListener("click",()=>{
   try{ de.requestFullscreen({navigationUI:"hide"}).catch(()=>{}); }catch(e){}
 },true);
 // Exit: closes the installed app or the tab. Browsers refuse to close a tab the player opened themselves,
-// so if the page is still here a moment later, a short goodbye note says to close it by hand.
+// so when the close is refused, a short goodbye note says to close it by hand.
 function exitGame(){
   try{ window.close(); }catch(e){}
-  setTimeout(()=>{ if(document.visibilityState !== "hidden") showGoodbye(); },300);
+  // window.closed turns true at once when the close is allowed, and stays false when the browser refuses.
+  if(!window.closed) showGoodbye();
 }
 function showGoodbye(){
   page();
