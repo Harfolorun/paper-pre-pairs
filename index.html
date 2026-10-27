@@ -21,9 +21,12 @@
 :root[data-theme="black"]{--bg:#000;--page:#000;--surface:#111;--line:#2a2a2a;--sel-bg:#0d1526;--hover:#4a4a4a}
 @media (hover:hover) and (min-width:700px){:root{--H:70vh}}
 *{box-sizing:border-box}
+/* Paper themes: the drawn desk reaches 20.9% of the game's height above it but only 6.4% below, so on tall phones the plain
+   centred game left a black strip under the art. Shift everything down (only into spare room) so the art is centred instead. */
+:root:is([data-theme="light"],[data-theme="dark"]){--dy:round(max(0px,min(calc(var(--H)*.07255),calc((100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - var(--H))/2))),1px)}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--page);touch-action:pan-y;overscroll-behavior:none}
 body{display:grid;place-items:center;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);-webkit-text-size-adjust:100%;color:var(--text);font-family:var(--font);font-weight:500;letter-spacing:var(--ls,normal);line-height:1.35}
-#app{position:relative;overflow:hidden;height:round(var(--H),2px);width:round(calc(var(--H)/1.76),2px);container-type:size;background:var(--bg);border:1px solid var(--line);border-radius:14px;--s:round(39cqw,2px);--y0:calc(86.9cqh - 3*var(--s))}
+#app{position:relative;top:var(--dy,0px);overflow:hidden;height:round(var(--H),2px);width:round(calc(var(--H)/1.76),2px);container-type:size;background:var(--bg);border:1px solid var(--line);border-radius:14px;--s:round(39cqw,2px);--y0:calc(86.9cqh - 3*var(--s))}
 #stage{position:absolute;inset:0;font-size:3.6cqw}
 .pg{height:100%;display:flex;flex-direction:column;align-items:center;gap:1.2cqh;padding-top:calc(var(--y0) - 7.2cqh)}
 .card,.wbbox{letter-spacing:inherit}
@@ -106,7 +109,7 @@ background-image:repeating-linear-gradient(to bottom,transparent 0,transparent c
 :root:is([data-theme="light"],[data-theme="dark"]) .wbinfo{background-color:var(--bg);background-image:linear-gradient(to bottom,transparent calc(100% - 1.5px),rgba(72,80,116,.09) calc(100% - 1.5px)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .52 0 0 0 0 .5 0 0 0 0 .47 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:100% calc(var(--H)*.05),160px 160px;background-repeat:repeat-y,repeat;background-origin:border-box;background-position:0 calc(0px - (50dvh - var(--H)*.5 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2 + 138cqh - 3*var(--s))),0 0}
 :root[data-theme="dark"] .wbinfo{background-image:linear-gradient(to bottom,transparent calc(100% - 1.5px),rgba(72,80,116,.09) calc(100% - 1.5px)),url("data:image/svg+xml,%3Csvg xmlns:xlink='http://www.w3.org/1999/xlink' xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .52 0 0 0 0 .5 0 0 0 0 .47 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 /* Light theme: desk scene (vertical on menu pages, horizontal on card pages); Word Bank keeps the older notebook look */
-#scene{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2);width:calc(var(--H)/1.76);height:var(--H);z-index:0;pointer-events:none}
+#scene{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2 + var(--dy,0px));width:calc(var(--H)/1.76);height:var(--H);z-index:0;pointer-events:none}
 #scene svg{display:block;width:100%;height:100%;overflow:visible}
 #scene .h{display:none}
 :root:is([data-theme="light"],[data-theme="dark"]) #scene{display:block}
@@ -143,7 +146,7 @@ body:has(#stage[data-sec]) #scene .hs{transform:translateY(-83.6px)}
 .endtitle{font-size:5.6cqw;font-weight:700;text-align:center;margin-bottom:5cqw}
 
 /* ===== Layered look (light theme): Layer 0 = page background, Layers 1-5 = containers measured from the layout images ===== */
-#layers{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2);width:calc(var(--H)/1.76);height:var(--H);z-index:0;pointer-events:none}
+#layers{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2 + var(--dy,0px));width:calc(var(--H)/1.76);height:var(--H);z-index:0;pointer-events:none}
 :root:is([data-theme="light"],[data-theme="dark"]) #layers{display:block}
 :root:is([data-theme="light"],[data-theme="dark"]) #scene,:root:is([data-theme="light"],[data-theme="dark"]) body::before{display:none!important}
 :root:is([data-theme="light"],[data-theme="dark"]),:root:is([data-theme="light"],[data-theme="dark"]) body{background:#ccc9c4}
@@ -156,14 +159,14 @@ body:has(#stage[data-sec]) #scene .hs{transform:translateY(-83.6px)}
 #layers img{position:absolute;display:block;max-width:none;max-height:none;margin:0;pointer-events:none;user-select:none;-webkit-user-select:none}
 #layers[data-l3="about"] .v3p{display:none}
 /* Dark theme overlay: gradient + frame on top of everything; same box as #layers, never blocks taps */
-#darkover{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2);width:calc(var(--H)/1.76);height:var(--H);z-index:10;pointer-events:none}
+#darkover{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2 + var(--dy,0px));width:calc(var(--H)/1.76);height:var(--H);z-index:10;pointer-events:none}
 #darkover svg{display:block;width:100%;height:100%;overflow:visible}
 :root[data-theme="dark"] #darkover{display:block}
-#darklogo{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2);width:calc(var(--H)/1.76);height:var(--H);z-index:11;pointer-events:none}
+#darklogo{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2 + var(--dy,0px));width:calc(var(--H)/1.76);height:var(--H);z-index:11;pointer-events:none}
 #darklogo img{position:absolute;display:block;max-width:none;max-height:none;margin:0;pointer-events:none;user-select:none;-webkit-user-select:none}
 :root[data-theme="dark"] body:is([data-page="landing"],[data-page="options"],[data-page="menu"]) #darklogo{display:block}
 /* View limit (Light + Dark): visuals outside the game container are cut 50% W past its left edge, 5% W past Layer 2's right edge, 2% H above Layer 1's top and 2% H below Layer 2's bottom; rounded like a Big Square, thin dark warm-grey outline, black beyond. */
-#viewclip{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2);width:calc(var(--H)/1.76);height:var(--H);z-index:14;pointer-events:none}
+#viewclip{display:none;position:fixed;left:calc(50vw - var(--H)/3.52);top:calc(50dvh - var(--H)/2 + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))/2 + var(--dy,0px));width:calc(var(--H)/1.76);height:var(--H);z-index:14;pointer-events:none}
 #viewclip::before{content:"";position:absolute;left:-50%;right:-75.5%;top:-20.938%;bottom:-6.4285%;border-radius:calc(var(--H)/1.76*.02983);box-shadow:0 0 0 max(1.5px,calc(var(--H)*.0018)) var(--vc-line),0 0 0 300vmax #000}
 :root[data-theme="light"] #viewclip{--vc-line:#b1aaa6}
 :root[data-theme="dark"] #viewclip{--vc-line:#2d1c22}
@@ -1051,7 +1054,33 @@ function backRect(fn){
   return b;
 }
 
-// Landing page: theme swatches, game types, Exit (placeholder).
+// Installed app (home-screen icon): the first tap goes true fullscreen, hiding Android's status and navigation bars,
+// and does so again after you leave and come back. A normal browser tab is left alone.
+const isInstalled = ()=>matchMedia("(display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui)").matches || navigator.standalone === true;
+document.addEventListener("click",()=>{
+  const de = document.documentElement;
+  if(!isInstalled() || document.fullscreenElement || !de.requestFullscreen) return;
+  try{ de.requestFullscreen({navigationUI:"hide"}).catch(()=>{}); }catch(e){}
+},true);
+// Exit: closes the installed app or the tab. Browsers refuse to close a tab the player opened themselves,
+// so if the page is still here a moment later, a short goodbye note says to close it by hand.
+function exitGame(){
+  try{ window.close(); }catch(e){}
+  setTimeout(()=>{ if(document.visibilityState !== "hidden") showGoodbye(); },300);
+}
+function showGoodbye(){
+  page();
+  curView = showGoodbye;
+  setLayers("landing");
+  const pg = mk("div","pg");
+  const note = mk("div","about");
+  note.appendChild(mk("div","abouttext",isInstalled() ? "Thanks for playing!\nSwipe the app away to close it." : "Thanks for playing!\nYou can close this tab now."));
+  note.firstChild.style.whiteSpace = "pre-line";
+  note.firstChild.style.textAlign = "center";
+  pg.append(note,backRect(showLanding));
+  stage.appendChild(pg);
+}
+// Landing page: theme swatches, game types, Exit.
 function showLanding(){
   page();
   curView = showLanding;
@@ -1070,6 +1099,7 @@ function showLanding(){
   const ex = mk("button","card rect backr","Exit");
   ex.type = "button";
   ex.dataset.sfx = "pen";
+  ex.addEventListener("click",exitGame);
   pg.append(ex,aboutBtn(),optBtn());
   stage.appendChild(pg);
   fitTitles();
