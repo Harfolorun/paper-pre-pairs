@@ -612,8 +612,8 @@ try{ const saved = localStorage.getItem("wordbank"); if(saved){ const p = parse(
 let section = "text";
 let gamePairs = [];
 let inGame = false;
-let theme = "dark";
-try{ const t = localStorage.getItem("theme"); if(t === "light" || t === "black") theme = t; }catch(e){}
+let theme = "light";
+try{ const t = localStorage.getItem("theme"); if(t === "dark" || t === "black") theme = t; }catch(e){}
 // Options page: keep the Light and Dark versions of everything on screen (background, Layer 1, the Options sheet) unpacked, so switching theme there is instant
 function warmOptionsThemes(){
   document.querySelectorAll('#L0 img,#L1 img,#L2 img[data-v="options"],#L0-d img,#L1-d img,#L2-d img[data-v="options"],#darklogo img').forEach(im=>{ if(im.decode) im.decode().catch(()=>{}); });
