@@ -150,6 +150,10 @@ body:has(#stage[data-sec]) #scene .hs{transform:translateY(-83.6px)}
 .rect.w8{width:calc(var(--s)*.8)}
 .board .card svg{height:min(28px,70%);width:auto}
 .backr.endback{top:calc(var(--y0) + 2*var(--s) - 4.8cqh);bottom:auto;transform:translateX(calc(-100% - .6cqh))}
+/* Repeat end screen: "Re-list Top 5 Mistakes" spans Restart + Back + the gap between them; those two move one row lower */
+.endmove{position:absolute;left:50%;transform:translateX(-50%);width:calc(1.6*var(--s) + 1.2cqh);top:calc(var(--y0) + 2*var(--s) - 4.8cqh);padding-right:calc(2.8cqw + var(--u)*.9)}
+/* (extra right padding: the frame's raised edge on the right makes the visible face sit a bit left, so the label is centred on the face) */
+.pg.hasmove .endagain,.pg.hasmove .backr.endback{top:calc(var(--y0) + 2*var(--s) + 2.4cqh)}
 .endtitle{font-size:5.6cqw;font-weight:700;text-align:center;margin-bottom:5cqw}
 
 /* ===== Layered look (light theme): Layer 0 = page background, Layers 1-5 = containers measured from the layout images ===== */
@@ -804,9 +808,29 @@ function fill(b,p,side){
 // Every card that took part in a wrong match is counted; Sounds and Images cards are counted by file name.
 let attnNext = false; // true right after a folder loads, so the Mega-Match! button can draw attention
 let mistakeLog = new Map();
+let mistakePairs = new Map(); // label -> the pairs it came from, so the Repeat end screen can move them in the Pairs Bank
+let mistakesMoved = false;
 function noteMistake(p,side){
   const label = section === "text" ? p[side] : p.b;
   mistakeLog.set(label,(mistakeLog.get(label)||0)+1);
+  if(!mistakePairs.has(label)) mistakePairs.set(label,new Set());
+  mistakePairs.get(label).add(p);
+}
+// Repeat end screen: the pairs behind the Top 5 mistakes go to the bottom of the Pairs Bank (in the same order as the receipt), then it's saved.
+function moveMistakesDown(top){
+  const moving = [];
+  top.slice().reverse().forEach(([label])=>(mistakePairs.get(label)||[]).forEach(p=>{ if(!moving.includes(p)) moving.unshift(p); }));
+  if(!moving.length) return;
+  const keys = new Set(moving.map(p=>p.a + "\u0000" + p.b));
+  const rest = pairs.filter(p=>!moving.includes(p) && !keys.has(p.a + "\u0000" + p.b));
+  const text = pairsToText([...rest,...moving]);
+  pairs = parse(text);
+  custom = true;
+  try{
+    localStorage.setItem("wordbank",text);
+    localStorage.setItem("wordbankDate",new Date().toISOString());
+  }catch(e){}
+  mistakesMoved = true;
 }
 // Hints (every mode except Challenge): after a wrong match, picking that same starting card again makes it and its
 // partner pulse 1.5 s later. A new pick, deselecting, or finishing the pair stops the hint.
@@ -1283,7 +1307,7 @@ const INSTRUCTIONS_HTML = `
 <li><button type="button" data-go="ins1">1. PAIRS</button>
   <ol><li><button type="button" data-go="ins11">1.1 Text pairs</button></li><li><button type="button" data-go="ins12">1.2 Image/Sound pairs</button></li></ol></li>
 <li><button type="button" data-go="ins2">2. GAME MODES</button>
-  <ol><li><button type="button" data-go="ins21">2.1 Practice</button></li><li><button type="button" data-go="ins22">2.2 Challenge</button></li><li><button type="button" data-go="ins23">2.3 Repeat</button></li><li><button type="button" data-go="ins24">2.4 Match!</button></li></ol></li>
+  <ol><li><button type="button" data-go="ins21">2.1 Practice</button></li><li><button type="button" data-go="ins22">2.2 Challenge</button></li><li><button type="button" data-go="ins23">2.3 Repeat</button><ol><li><button type="button" data-go="ins231">2.3.1 Re-list Mistakes!</button></li></ol></li><li><button type="button" data-go="ins24">2.4 Match!</button></li></ol></li>
 <li><button type="button" data-go="ins3">3. HINTS</button></li>
 <li><button type="button" data-go="ins4">4. ABOUT</button></li>
 </ol>
@@ -1297,6 +1321,7 @@ const INSTRUCTIONS_HTML = `
 <p id="ins21">2.1 <b>Practice</b> mode uses the <b>20</b> newest pairs (<b>lowest</b> on the Pairs Bank list). It requires you to match <b>60</b> pairs with no time limit.</p>
 <p id="ins22">2.2 <b>Challenge</b> mode uses the <b>20</b> newest pairs (<b>lowest</b> on the Pairs Bank list). It requires you to match <b>60</b> pairs in <b>60</b> seconds. No hints are available in this mode!</p>
 <p id="ins23">2.3 <b>Repeat</b> mode uses <b>every pair</b> on the Pairs Bank list. It requires you to match <b>120</b> pairs with no time limit.</p>
+<p id="ins231">2.3.1 <b>Re-list Mistakes!</b> After a round of <b>Repeat</b> mode, you can press the <b>Re-list Top 5 Mistakes</b> button. It moves the pairs involved in the top 5 mistakes of that round to the <b>bottom</b> of your Pairs Bank list, which makes them instantly available in <b>Practice</b> and <b>Challenge</b> modes.</p>
 <p id="ins24">2.4 <b>Match!</b> mode uses <b>all eligible files</b> in the folder you selected. It requires you to match <b>60</b> pairs with no time limit.</p>
 <h3 id="ins3">3. HINTS</h3>
 <p>Selecting the same card again after an incorrect match will give you a moment to think and then show you its correct match. Hints are disabled in <b>Challenge</b> mode.</p>
@@ -1441,7 +1466,7 @@ function start(m){
   hintStarts = new Set(); clearHint();
   const size = Math.min(SIZE, gamePairs.length);
   queue = shuffle(gamePairs);
-  matched = 0; mistakes = 0; mistakeLog = new Map(); pick = null; locked = false; startedAt = Date.now();
+  matched = 0; mistakes = 0; mistakeLog = new Map(); mistakePairs = new Map(); mistakesMoved = false; pick = null; locked = false; startedAt = Date.now();
   const items = [], onScreen = new Set();
   for(let i=0;i<size;i++){
     const p = nextPair(onScreen);
@@ -1650,10 +1675,29 @@ function renderEnd(won,pairsDone,errors,elapsed,when = new Date()){
   const bk = backRect(showMenu); bk.classList.add("endback");
   // Restart and Back sit where the playing field was, so they stay inactive and faded for 1 second to prevent accidental taps.
   const guarded = [again,bk];
+  if(mode === "repeat" && section === "text"){
+    // Repeat only: send the Top 5 mistakes to the bottom of the Pairs Bank (once per game; faded if there's nothing to move)
+    const mv = mk("button","card rect endmove",mistakesMoved ? "Pairs Bank updated!" : "Re-list Top 5 Mistakes");
+    mv.type = "button";
+    mv.dataset.sfx = "pen";
+    mv.setAttribute("aria-label","Move the Top 5 mistakes to the bottom of the Pairs Bank");
+    const usable = top.length > 0 && !mistakesMoved;
+    mv.addEventListener("click",()=>{
+      moveMistakesDown(top);
+      mv.textContent = "Pairs Bank updated!";
+      mv.disabled = true; mv.classList.add("lock");
+      fitTitles();
+    });
+    if(usable) guarded.push(mv);
+    else{ mv.disabled = true; mv.classList.add("lock"); }
+    pg.classList.add("hasmove");
+    pg.append(mv);
+  }
   guarded.forEach(x=>{ x.disabled = true; x.classList.add("lock"); });
   setTimeout(()=>guarded.forEach(x=>{ x.disabled = false; x.classList.remove("lock"); }),1000);
   pg.append(box,again,bk);
   stage.appendChild(pg);
+  fitTitles();
 }
 
 ["gesturestart","gesturechange"].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
