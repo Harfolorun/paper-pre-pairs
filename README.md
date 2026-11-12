@@ -20,7 +20,7 @@ For example: `left, right` or `house, casa` or even `02-09-1945, End of WW2`.
 - **[IM]** (import) loads pairs from a TXT file.
 - **[EX]** (export) saves your pairs as a TXT file, with the date and the number of pairs in its name.
 
-**Pairs Bank** is saved in your browser. **Export it with **[EX] regularly** as a backup, so you don't lose it when you clear your browser's *cookies and site data*.
+**Pairs Bank** is saved in your browser. **Export it with [EX] regularly** as a backup, so you don't lose it when you clear your browser's *cookies and site data*.
 
 ### Image/Sound pairs
 
