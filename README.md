@@ -6,8 +6,8 @@ A "Match Two" game where **you provide the pairs**. Write your own word lists, o
 
 The game runs in your browser on phones and PCs. On Android it can also be installed as an app that works offline.
 <p align="center">
-<img width="250" alt="MainMenu" src="https://github.com/user-attachments/assets/b9996b32-bb98-43f2-8deb-a62a80c671ae" />  <img width="250" alt="PairsBank" src="https://github.com/user-attachments/assets/d1ac6d77-8e46-48b4-9cf0-0ab747a0d939" />  <img width="250" alt="MatchingGame" src="https://github.com/user-attachments/assets/7c7af428-e9ec-4b1d-99b5-4f7845a98381" /> 
-<img width="250" alt="SoundsGame" src="https://github.com/user-attachments/assets/785af50a-eb61-4bc6-a4d6-89d207b104a5" />  <img width="250" alt="ImagesGame" src="https://github.com/user-attachments/assets/ca3d2a5a-83c1-4500-b3ea-288a4a4e647c" />  <img width="250" alt="ColorThemes" src="https://github.com/user-attachments/assets/4d6a2382-5a53-492c-90ef-436b0aec8a74" />
+<img width="280" alt="MainMenu" src="https://github.com/user-attachments/assets/b9996b32-bb98-43f2-8deb-a62a80c671ae" />  <img width="280" alt="PairsBank" src="https://github.com/user-attachments/assets/d1ac6d77-8e46-48b4-9cf0-0ab747a0d939" />  <img width="280" alt="MatchingGame" src="https://github.com/user-attachments/assets/7c7af428-e9ec-4b1d-99b5-4f7845a98381" /> 
+<img width="280" alt="SoundsGame" src="https://github.com/user-attachments/assets/785af50a-eb61-4bc6-a4d6-89d207b104a5" />  <img width="280" alt="ImagesGame" src="https://github.com/user-attachments/assets/ca3d2a5a-83c1-4500-b3ea-288a4a4e647c" />  <img width="280" alt="ColorThemes" src="https://github.com/user-attachments/assets/4d6a2382-5a53-492c-90ef-436b0aec8a74" />
 </p>
 
 ---
