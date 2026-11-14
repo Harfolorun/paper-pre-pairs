@@ -2,7 +2,7 @@
 
 *A pun on "prepares": it helps you prepare, one pair at a time.*
 
-A "Match Two" game where **you provide the pair**s. Write your own word lists, or use folders of images or sounds, and practice them by matching. It's made for learning, especially languages, and it's **free to play**.
+A "Match Two" game where **you provide the pairs**. Write your own word lists, or use folders of images or sounds, and practice them by matching. It's made for learning, especially languages, and it's **free to play**.
 
 The game runs in your browser on phones and PCs. On Android it can also be installed as an app that works offline.
 <p align="center">
