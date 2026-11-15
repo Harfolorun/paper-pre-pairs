@@ -84,6 +84,9 @@ button.card,label.card,.th,.wbbox{box-shadow:0 .3cqw .15cqw -.05cqw var(--shadow
 .board.images .card:has(img){padding:0;overflow:hidden}
 .card svg{display:block;margin:0 auto}
 .card img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+/* Images game: thin border around each picture in the card text colour */
+.board.images .card img{box-sizing:border-box;border:max(1.5px,.45cqw) solid currentColor;border-radius:calc(2.2cqw - 2px)}
+:root:is([data-theme="light"],[data-theme="dark"],[data-theme="black"]) .board.images .card img{border-radius:calc(var(--u)*3.695 - var(--bw))}
 .ghost{position:absolute;pointer-events:none;border:2px solid #2a8c28;border-radius:2.2cqw;animation:ghostfade 1s ease-out forwards}
 :where(:root[data-theme="dark"]) .ghost{border:2px solid #1ba632}
 @keyframes ghostfade{from{opacity:1}to{opacity:0}}
@@ -92,6 +95,12 @@ button.card,label.card,.th,.wbbox{box-shadow:0 .3cqw .15cqw -.05cqw var(--shadow
 :where(:root[data-theme="dark"]) .card.bad,:where(:root[data-theme="dark"]) .card.bad:hover{border-color:#e36047}
 .card.gone{opacity:.35;pointer-events:none;color:transparent;transition:opacity .3s,border-color .3s,background .3s}
 .card.gone svg,.card.gone img{visibility:hidden}
+/* Images game: a matched picture card keeps a faded outline of its border while it waits for a refill (picture moved out of view, border stays) */
+.board.images .card.gone img{visibility:visible;object-position:-100000px 0}
+/* (gone cards have transparent text, so the border colour is spelled out per theme) */
+.board.images .card.gone img{border-color:var(--text)}
+:root:is([data-theme="light"],[data-theme="dark"]) .board.images .card.gone img{border-color:#485074}
+:root[data-theme="black"] .board.images .card.gone img{border-color:#999}
 .card.new{animation:fadein .5s backwards;pointer-events:none;transition:border-color .3s,opacity .3s,background .3s}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 @keyframes hintpulse{0%,10%,20%,40%,50%,60%,80%,90%,100%{scale:1}5%,15%,45%,55%,85%,95%{scale:1.03}}
@@ -292,6 +301,8 @@ body:is([data-page="options"],[data-page="menu"]) #darklogo .dlwhole{display:non
 .news .wbhead{flex:none;display:flex;flex-direction:column;user-select:none;-webkit-user-select:none}
 /* "THE PAIRS BANK": breathing room from the rules above and below, a hair narrower than them (as in the layout mock-up) */
 .news .wbtitle{width:99.3%;margin:2.44cqw auto 2.84cqw}
+/* title squashed to 80% of its natural height (top stays put; everything below moves up, the pairs box grows) */
+.news .wbtitle{height:calc(89cqw*.993*1389/8413*.8)}
 .news .wbarticle{margin:2.2cqw 0 1.95cqw}
 /* Instructions: scrollable box over the same area as the newspaper text, ending a little above where the About paper's grid stops (148.5cqw) */
 .instrbox{position:absolute;left:5.6cqw;width:89cqw;top:32.66cqw;height:112.8cqw;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;border:0;border-radius:0;padding:2.5cqw 3cqw;color:var(--text);font-size:5cqw;line-height:1.2;font-weight:500;text-align:left;scrollbar-color:var(--text) transparent}
@@ -1296,6 +1307,7 @@ function showWordBank(){
   ie.appendChild(btns);
   const title = wbArt(0), sub = wbArt(1);
   title.classList.add("wbtitle");
+  title.setAttribute("preserveAspectRatio","none");
   const h1 = mk("h2","vh","The Pairs Bank"), h2 = mk("h2","vh","Instructions and tips");
   // Everything above the pairs box is one big button that opens the Instructions page.
   const head = mk("div","wbhead");
