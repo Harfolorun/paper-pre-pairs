@@ -164,6 +164,8 @@ body:has(#stage[data-sec]) #scene .hs{transform:translateY(-83.6px)}
 /* Repeat end screen: "Re-list Top 5 Mistakes" spans Restart + Back + the gap between them; those two move one row lower */
 .pickgrid{position:absolute;left:5cqw;right:5cqw;top:5cqh;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:6cqh;gap:1.2cqh}
 .pickgrid .card.rect{width:auto;padding:0 2cqw}
+/* "last played" dot in the top right corner of the pick button played most recently */
+.pickgrid .lastdot{position:absolute;top:.45cqh;right:1.4cqw;width:1.215cqh;height:1.215cqh;border-radius:50%;background:var(--text);pointer-events:none}
 .pickback{bottom:auto;top:calc(5cqh + 10*7.2cqh)}
 .card.pgnav{position:absolute;top:calc(5cqh + 10*7.2cqh);width:6cqh;height:6cqh;padding:0;display:flex;align-items:center;justify-content:center}
 .pgnav svg{width:62%;height:62%}
@@ -1379,6 +1381,7 @@ function fitTitles(){
     // measure the text itself, not scrollWidth: a button's drawn outline layers reach past its edges and
     // used to make short labels like "Back" look a pixel too wide, so they got squeezed for nothing
     const cs = getComputedStyle(t), rg = document.createRange(); rg.selectNodeContents(t);
+    const dot = t.querySelector(".lastdot"); if(dot) rg.setEndBefore(dot); // the "last played" dot isn't text
     const over = rg.getBoundingClientRect().width - (t.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
     if(over <= 0.5) return;
     const fs = parseFloat(getComputedStyle(t).fontSize);
@@ -1466,6 +1469,16 @@ function showMenu(){
 // multiple of 20); that keeps pairs sent down by "Re-list Top 5 Mistakes" together in one button.
 const PICK_PER_PAGE = 30;
 let pickPage = 0;
+// Rows of the pick button played last (kept between visits), marked with a dot so the place isn't lost among many buttons
+let lastRange = null;
+try{ const v = (localStorage.getItem("lastRange") || "").split("-").map(Number); if(v.length === 2 && v[0] > 0 && v[1] >= v[0]) lastRange = v; }catch(e){}
+// index of the button to mark: the exact range, or (after the Pairs Bank changed size) the one overlapping it most
+function lastRangeIndex(ranges){
+  if(!lastRange) return -1;
+  let best = -1, most = 0;
+  ranges.forEach(([a,z],k)=>{ const o = Math.min(z,lastRange[1]) - Math.max(a,lastRange[0]) + 1; if(o > most){ most = o; best = k; } });
+  return best;
+}
 function pairRanges(){
   const n = pairs.length, out = [];
   if(n <= 20) return [[1,n]];
@@ -1482,10 +1495,8 @@ function showPick(m,keepPage = false){
   setLayers("game");
   const ranges = pairRanges(), pages = Math.ceil(ranges.length / PICK_PER_PAGE);
   // coming from the menu: open on the page with the last range played, if it is still there (arrows keep their page)
-  if(gameRange && !keepPage){
-    const k = ranges.findIndex(r=>r[0] === gameRange[0] && r[1] === gameRange[1]);
-    if(k >= 0) pickPage = Math.floor(k / PICK_PER_PAGE);
-  }
+  const lastK = lastRangeIndex(ranges);
+  if(lastK >= 0 && !keepPage) pickPage = Math.floor(lastK / PICK_PER_PAGE);
   pickPage = Math.max(0,Math.min(pickPage,pages - 1));
   const pg = mk("div","pg");
   const grid = mk("div","pickgrid");
@@ -1501,7 +1512,9 @@ function showPick(m,keepPage = false){
     b.style.gridColumn = String(k % 3 + 1);
     b.type = "button";
     b.dataset.sfx = "paper";
-    b.setAttribute("aria-label",`Play rows ${a} to ${z}`);
+    const isLast = pickPage * PICK_PER_PAGE + k === lastK;
+    b.setAttribute("aria-label",`Play rows ${a} to ${z}` + (isLast ? " (played last)" : ""));
+    if(isLast){ const dot = mk("span","lastdot"); dot.setAttribute("aria-hidden","true"); b.appendChild(dot); }
     b.addEventListener("click",()=>start(m,[a,z]));
     grid.appendChild(b);
   });
@@ -1538,7 +1551,10 @@ function nextPair(onScreen){
 // Practice / Challenge: rows of the Pairs Bank (1-based, inclusive) chosen on the pick page; Restart keeps them.
 let gameRange = null;
 function start(m,range){
-  if(range) gameRange = range;
+  if(range){
+    gameRange = range; lastRange = range;
+    try{ localStorage.setItem("lastRange",range[0] + "-" + range[1]); }catch(e){}
+  }
   if((m === "classic" || m === "timed") && !range && !gameRange){ showPick(m); return; }
   stopTimer();
   inGame = true;
