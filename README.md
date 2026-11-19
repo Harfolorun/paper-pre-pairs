@@ -43,7 +43,7 @@ Select a **folder** of image or audio files. On some devices you have to select 
 | **Repeat** | Every pair in the Pairs Bank | Match 120 pairs | None |
 | **Match!** | All eligible files in the selected folder | Match 60 pairs | None |
 
-In **Practice** and **Challenge**, you choose which rows of the Pairs Bank to play before the game starts, for example "1-20" or "21-40".
+In **Practice** and **Challenge**, you choose which rows of the Pairs Bank to play before the game starts, for example "1-20" or "21-40". A small dot in the top right corner marks the button you played most recently. If the Pairs Bank changes size, the dot moves to the button closest to the rows you last played.
 
 ### Re-list Mistakes!
 
